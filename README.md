@@ -10,7 +10,10 @@ A python script to visualize the serial data on a real time plot. It utilizes ma
 * Automatically scales the y-axis to fit the visible lines.
 
 ## Screenshots
-
+<p align="center">
+  <img src="https://github.com/bataseven/serial_animator/Screenshots/Serial_Plotter.png" width=400 title="Plot 1">
+  <img src="https://github.com/bataseven/serial_animator/Screenshots/Serial_Plotter2.png" width="400" title="Plot 2">
+</p>
 
 
 
