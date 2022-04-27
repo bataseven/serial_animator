@@ -1,2 +1,4 @@
-# serial_animator
+# Serial Animator
 Serial Port Data Visualizer
+
+
