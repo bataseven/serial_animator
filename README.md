@@ -1,7 +1,7 @@
 # Serial Animator
 
 ## What is this?
-A python script to visualize the serial data on a real time plot. It utilizes matplotlib library to generate the plot. The script does the following:
+A python script to visualize the serial data on a real time moving plot. It utilizes matplotlib library to generate the plot. The script does the following:
 
 * Connects to and reads from a serial port.
 * Parses each line coming from the serial port into the labels and values.
