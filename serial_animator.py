@@ -241,9 +241,9 @@ class SerialAnimator:
                     if point[1] < self.min_y:
                         self.min_y = point[1]
 
-        if self.min_y == 0:
+        if self.min_y == 0 or self.min_y == inf:
             self.min_y = -1 / 1.1
-        if self.max_y == 0:
+        if self.max_y == 0 or self.max_y == -inf:
             self.max_y = 1 / 1.1
 
         self.ax[1].set_ylim(self.min_y * 1.1, self.max_y * 1.1)
