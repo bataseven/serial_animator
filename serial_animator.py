@@ -51,6 +51,11 @@ class SerialAnimator:
                 clearConsole()
         self.slide_limit = 100
         self.data_count = 0
+        self.last_time = 0
+        self.delta_times = collections.deque(maxlen=15)
+        self.delta_times.append(1) # Avoid division by zero
+        self.average_rate = 0
+
         # Dictionary of all the data, with the label as the key.
         # Values of the dictionary are a list.
         # First element of the list is a deque, where the data is stored in (data_count, value) pairs.
@@ -129,6 +134,14 @@ class SerialAnimator:
             new_line = new_line.strip()
             self.parse_line(new_line)
             self.data_count += 1
+            
+            average_times = sum(self.delta_times) / len(self.delta_times)
+            if average_times > 0:
+                self.average_rate = 1 / average_times
+            
+            current_time = time.time()
+            self.delta_times.append(current_time - self.last_time)
+            self.last_time = current_time
 
     def start_reading(self):
         self.reading_thread = threading.Thread(target=self.read_serial_port)
@@ -167,10 +180,10 @@ class SerialAnimator:
             if self.labeled_data[label][1].get_visible():
                 if float(value) > self.max_y:
                     self.max_y = float(value)
-                    self.ax[1].set_ylim(self.min_y * 1.1, self.max_y * 1.1)
+                    self.ax[1].set_ylim(self.min_y - 0.1 * abs(self.min_y), self.max_y + 0.1 * abs(self.max_y))
                 if float(value) < self.min_y:
                     self.min_y = float(value)
-                    self.ax[1].set_ylim(self.min_y * 1.1, self.max_y * 1.1)
+                    self.ax[1].set_ylim(self.min_y - 0.1 * abs(self.min_y), self.max_y + 0.1 * abs(self.max_y))
 
     def draw_checkbox(self):
         self.ax[0].clear()
@@ -262,7 +275,7 @@ class SerialAnimator:
         if self.max_y == 0 or self.max_y == -inf:
             self.max_y = 1
 
-        self.ax[1].set_ylim(self.min_y * 1.1, self.max_y * 1.1)
+        self.ax[1].set_ylim(self.min_y - 0.1 * abs(self.min_y), self.max_y + 0.1 * abs(self.max_y))
 
     def update_plot(self, frame):
         for key in self.labeled_data.keys():
@@ -277,8 +290,9 @@ class SerialAnimator:
             self.ax[1].set_xlim(
                 self.data_count - self.slide_limit, self.data_count)
 
-        self.ax[1].set_title(
-            f"Serial Data over {self.serial_port.port}\n{time.time() - self.start_time:.1f} seconds")
+        plot_title = f"Serial Data over {self.serial_port.port}\n{time.time() - self.start_time:.1f} seconds"
+        #plot_title = f"Serial Data over {self.serial_port.port}\n{time.time() - self.start_time:.1f} seconds\n{self.average_rate:.1f} Hz"
+        self.ax[1].set_title(plot_title)
 
     def close(self):
         self.stop_requested = True
