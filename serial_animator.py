@@ -13,6 +13,7 @@ import re
 import threading
 from matplotlib.widgets import CheckButtons
 import logging
+import argparse
 
 logging.getLogger('matplotlib').setLevel(level=logging.CRITICAL)
 
@@ -23,6 +24,14 @@ plt.style.use(matplotx.styles.github["dimmed"])
 def clearConsole(): return os.system(
     'cls' if os.name in ('nt', 'dos') else 'clear')
 
+parser = argparse.ArgumentParser(description='Serial Animator')
+parser.add_argument("--port", type=str, help="Serial port to use")
+parser.add_argument("--baud", type=int, help="Baud rate to use")
+
+args = parser.parse_args()
+
+args_port = args.port
+args_baud = args.baud
 
 class SerialAnimator:
     def __init__(self):
@@ -57,6 +66,9 @@ class SerialAnimator:
         if len(ports) == 0:
             print("No serial port found.", end=" ")
             return None, None
+        elif args_port is not None:
+            port = args_port
+            print("Using port: {}".format(port))
         elif len(ports) == 1:
             port = ports[0]
             print("Using port: {}".format(port))
@@ -69,7 +81,11 @@ class SerialAnimator:
                 port = ports[0]
             finally:
                 print("Using port: {}".format(port))
-        baudrate = input("Enter the baudrate (Enter for 115200): ")
+        if args_baud is not None:
+            baudrate = args_baud
+            print(f"Using baudrate: {baudrate}")
+        else:
+            baudrate = input("Enter the baudrate (Enter for 115200): ")
         if baudrate == "":
             baudrate = 115200
         else:
